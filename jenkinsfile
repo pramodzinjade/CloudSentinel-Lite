@@ -6,7 +6,7 @@ pipeline {
         SERVER_IP     = '3.7.68.37'
         SSH_CREDENTIAL = 'cloudsentinel'
         BRANCH        = 'master'
-        REMOTE_USER   = 'ec2-user'
+        REMOTE_USER   = 'ubuntu'
         REMOTE_PATH   = '/home/ec2-user/project1/cloudsentinel'
         CONTAINER_NAME = 'my-website'
         IMAGE_NAME     = 'my-website'
