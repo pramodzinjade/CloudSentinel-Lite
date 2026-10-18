@@ -1,0 +1,71 @@
+
+pipeline {
+    agent any
+
+    environment {
+        SERVER_IP     = '3.7.68.37'
+        SSH_CREDENTIAL = 'cloudsentinel'
+        BRANCH        = 'master'
+        REMOTE_USER   = 'ec2-user'
+        REMOTE_PATH   = '/home/ec2-user/project1/cloudsentinel'
+        CONTAINER_NAME = 'my-website'
+        IMAGE_NAME     = 'my-website'
+        HOST_PORT      = '80'
+        CONTAINER_PORT = '80'
+    }
+
+    stages {
+        stage('Deploy Website') {
+            steps {
+                sshagent(credentials: [SSH_CREDENTIAL]) {
+                    sh """
+                        ssh -o StrictHostKeyChecking=no \
+                            ${REMOTE_USER}@${SERVER_IP} '
+                            set -e
+
+                            cd ${REMOTE_PATH}
+                            git pull origin ${BRANCH}
+
+                            docker build -t ${IMAGE_NAME}:latest .
+
+                            docker stop ${CONTAINER_NAME} || true
+                            docker rm ${CONTAINER_NAME} || true
+
+                            docker run -d \
+                                --name ${CONTAINER_NAME} \
+                                --restart unless-stopped \
+                                -p ${HOST_PORT}:${CONTAINER_PORT} \
+                                ${IMAGE_NAME}:latest
+                        '
+                    """
+                }
+            }
+        }
+
+        stage('Verify Website') {
+            steps {
+                sshagent(credentials: [SSH_CREDENTIAL]) {
+                    sh """
+                        ssh -o StrictHostKeyChecking=no \
+                            ${REMOTE_USER}@${SERVER_IP} '
+                            docker ps --filter name=${CONTAINER_NAME}
+                            curl -fsS http://localhost:${HOST_PORT}/
+                        '
+                    """
+                }
+            }
+        }
+    }
+
+    post {
+        success {
+            echo 'Website deployed successfully!'
+        }
+        failure {
+            echo 'Website deployment failed. Check Jenkins Console Output.'
+        }
+        always {
+            echo 'Pipeline execution completed.'
+        }
+    }
+}
