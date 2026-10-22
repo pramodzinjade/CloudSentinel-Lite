@@ -11,7 +11,7 @@ def home():
     <!DOCTYPE html>
     <html>
     <head>
-        <title>my CloudSentinel Lite by pramod on docker container</title>
+        <title>my CloudSentinel Lite by pramod </title>
         <style>
             body {
                 font-family: Arial, sans-serif;
