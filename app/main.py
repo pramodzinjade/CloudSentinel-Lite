@@ -11,7 +11,7 @@ def home():
     <!DOCTYPE html>
     <html>
     <head>
-        <title>CloudSentinel Lite by pramod at 00:08</title>
+        <title>my CloudSentinel Lite by pramod at 00:08</title>
         <style>
             body {
                 font-family: Arial, sans-serif;
