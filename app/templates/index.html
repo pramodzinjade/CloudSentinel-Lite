@@ -1,0 +1,293 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CloudSentinel-Lite | Dashboard</title>
+<style>
+:root {
+  --navy: #111d32;
+  --blue: #2784f5;
+  --green: #08a66b;
+  --muted: #60748f;
+  --border: #dce6f1;
+  --bg: #f5f8fc;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  font-family: Inter, "Segoe UI", Arial, sans-serif;
+  background: var(--bg);
+  color: #172b49;
+}
+.layout { display: flex; min-height: 100vh; }
+aside {
+  width: 240px; background: var(--navy); color: white;
+  padding: 28px 18px; display: flex; flex-direction: column;
+}
+.brand { font-size: 20px; font-weight: 750; line-height: 1.4; }
+.brand small { display: block; color: #aabbd2; font-size: 12px; font-weight: 400; }
+nav { margin-top: 40px; }
+nav a {
+  display: block; padding: 14px; margin-bottom: 8px;
+  border-radius: 9px; color: #dce6f4; text-decoration: none;
+}
+nav a.active, nav a:hover { background: #234e91; color: white; }
+.sidebar-bottom { margin-top: auto; color: #46d9a0; font-size: 13px; }
+main { flex: 1; min-width: 0; }
+header {
+  background: white; border-bottom: 1px solid var(--border);
+  padding: 24px 30px; display: flex; justify-content: space-between;
+  align-items: center; gap: 12px; flex-wrap: wrap;
+}
+h1 { font-size: 26px; margin: 0 0 6px; }
+p { color: var(--muted); }
+header p { margin: 0; }
+.live { color: var(--green); font-weight: 700; font-size: 14px; }
+.content { padding: 26px 30px; }
+.hero {
+  background: linear-gradient(115deg, #e8fbf3, #f6fffc);
+  border: 1px solid #b8ead5; border-radius: 14px;
+  padding: 28px; margin-bottom: 24px;
+}
+.hero-top { display: flex; align-items: center; gap: 18px; flex-wrap: wrap; }
+.check {
+  width: 58px; height: 58px; border-radius: 50%; background: var(--green);
+  color: white; display: grid; place-items: center; font-size: 30px;
+}
+.hero h2 { margin: 0 0 8px; font-size: 23px; }
+.hero p { margin: 0; }
+.pill {
+  margin-left: auto; background: #d0f6e5; color: #08794e;
+  border-radius: 30px; padding: 10px 17px; font-weight: 700; font-size: 13px;
+}
+.details {
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  gap: 18px; margin-top: 28px;
+}
+.detail { border-right: 1px solid #d5e9e1; padding-right: 8px; }
+.detail span { display: block; color: var(--muted); font-size: 12px; margin-bottom: 7px; }
+.detail strong { font-size: 14px; overflow-wrap: anywhere; }
+.cards { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 18px; }
+.card {
+  background: white; border: 1px solid var(--border); border-radius: 12px;
+  padding: 21px; min-width: 0;
+}
+.card h3 { font-size: 14px; margin: 0 0 24px; }
+.metric { font-size: 28px; font-weight: 750; margin-bottom: 8px; }
+.good { color: var(--green); }
+.small { font-size: 13px; color: var(--muted); }
+.tag { display: inline-block; background: #e2f8ee; color: #078454; padding: 7px 12px; border-radius: 8px; margin-top: 17px; font-size: 12px; }
+.lower { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-top: 20px; }
+.lower h3 { margin: 0 0 18px; }
+.chart { height: 150px; display: flex; align-items: end; gap: 9px; padding: 15px 5px 0; border-bottom: 1px solid var(--border); }
+.bar { flex: 1; min-width: 5px; background: #4b9bff; border-radius: 5px 5px 0 0; }
+.logbox { background: #172436; color: #73efbb; padding: 16px; border-radius: 9px; font: 12px/1.9 monospace; overflow-wrap: anywhere; }
+button {
+  border: 0; border-radius: 9px; background: var(--blue); color: white;
+  font-weight: 650; padding: 12px 16px; cursor: pointer;
+}
+button:hover { background: #1769d2; }
+#health-message { margin-top: 12px; font-size: 13px; }
+footer { margin-top: 20px; background: #edf5ff; border: 1px solid #d9e9ff; border-radius: 12px; padding: 20px; }
+@media(max-width: 1050px) {
+  aside { width: 190px; }
+  .cards { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .details { grid-template-columns: repeat(2, 1fr); }
+}
+@media(max-width: 650px) {
+  .layout { display: block; }
+  aside { width: 100%; padding: 18px; }
+  nav { margin-top: 15px; display: flex; flex-wrap: wrap; gap: 5px; }
+  nav a { padding: 10px; margin: 0; }
+  .sidebar-bottom { display: none; }
+  header, .content { padding: 20px 16px; }
+  .cards, .lower, .details { grid-template-columns: 1fr; }
+  .pill { margin-left: 0; }
+  .detail { border-right: 0; }
+}
+</style>
+</head>
+<body>
+<div class="layout">
+  <aside>
+    <div class="brand">☁ CloudSentinel-Lite
+      <small>Self-Healing Cloud &amp; DevOps</small>
+    </div>
+    <nav>
+      <a class="active" href="#dashboard">⌂ Dashboard</a>
+      <a href="#application">◇ Application</a>
+      <a href="#logs">▤ Logs</a>
+      <a href="#monitoring">▥ Monitoring</a>
+    </nav>
+    <div class="sidebar-bottom">● System Online<br><br>v1.0.0</div>
+  </aside>
+
+  <main id="dashboard">
+    <header>
+      <div>
+        <h1>Dashboard</h1>
+        <p>Monitor your application and infrastructure health</p>
+      </div>
+      <div class="live">● LIVE &nbsp; <span id="clock"></span></div>
+    </header>
+
+    <div class="content">
+      <section class="hero" id="application">
+        <div class="hero-top">
+          <div class="check" id="check-icon">✓</div>
+          <div>
+            <h2 id="hero-title">Application is Running</h2>
+            <p id="hero-description">Your CloudSentinel-Lite application is responding.</p>
+          </div>
+          <div class="pill" id="status-pill">● Healthy</div>
+        </div>
+        <div class="details">
+          <div class="detail"><span>APPLICATION URL</span><strong id="app-url">/</strong></div>
+          <div class="detail"><span>CONTAINER</span><strong>cloudsentinel</strong></div>
+          <div class="detail"><span>PORT MAPPING</span><strong>80 → 5000</strong></div>
+          <div class="detail"><span>LAST CHECK</span><strong id="last-check">Waiting...</strong></div>
+        </div>
+      </section>
+
+      <section class="cards" id="monitoring">
+        <div class="card">
+          <h3>🌐 Application Status</h3>
+          <div class="metric good" id="http-status">Checking...</div>
+          <div class="small">HTTP status code</div>
+          <span class="tag" id="http-tag">Testing</span>
+        </div>
+        <div class="card">
+          <h3>▣ Container Status</h3>
+          <div class="metric good">Running</div>
+          <div class="small">Docker container</div>
+          <span class="tag">Docker</span>
+        </div>
+        <div class="card">
+          <h3>ϟ Response Time</h3>
+          <div class="metric" id="response-time">-- ms</div>
+          <div class="small">Latest health check</div>
+          <span class="tag" id="speed-tag">Measuring</span>
+        </div>
+        <div class="card">
+          <h3>↻ Total Checks</h3>
+          <div class="metric" id="total-checks">0</div>
+          <div class="small">Checks performed in this session</div>
+          <span class="tag">Live counter</span>
+        </div>
+      </section>
+
+      <section class="lower">
+        <div class="card">
+          <h3>Response Time History</h3>
+          <div class="small">Recent browser health checks (visual scale)</div>
+          <div class="chart" id="chart"></div>
+          <p class="small">Each bar represents one recent check.</p>
+        </div>
+        <div class="card" id="logs">
+          <h3>Recent Activity</h3>
+          <div class="logbox" id="logbox">Waiting for first health check...</div>
+          <p><button onclick="checkHealth()">↻ Check Health Now</button></p>
+          <div id="health-message" aria-live="polite"></div>
+        </div>
+      </section>
+
+      <footer>
+        <strong>About CloudSentinel-Lite</strong>
+        <p>A portfolio project demonstrating Python Flask, Docker, AWS EC2,
+        health checks and DevOps monitoring.</p>
+      </footer>
+    </div>
+  </main>
+</div>
+
+<script>
+let checks = 0;
+let times = [];
+let logs = [];
+
+function updateClock() {
+  document.getElementById('clock').textContent =
+    new Date().toLocaleString();
+}
+setInterval(updateClock, 1000);
+updateClock();
+
+function addLog(text) {
+  logs.unshift(new Date().toLocaleTimeString() + '  ' + text);
+  logs = logs.slice(0, 7);
+  document.getElementById('logbox').innerHTML =
+    logs.map(line => {
+      const safe = line.replace(/&/g, '&amp;').replace(/</g, '&lt;')
+                       .replace(/>/g, '&gt;');
+      return safe;
+    }).join('<br>');
+}
+
+function drawChart() {
+  const chart = document.getElementById('chart');
+  const max = Math.max(10, ...times);
+  chart.innerHTML = times.map(ms =>
+    `<div class="bar" title="${ms.toFixed(1)} ms"
+      style="height:${Math.max(5, ms / max * 100)}%"></div>`
+  ).join('');
+}
+
+async function checkHealth() {
+  const message = document.getElementById('health-message');
+  message.textContent = 'Checking application...';
+  const start = performance.now();
+
+  try {
+    const response = await fetch('/health', { cache: 'no-store' });
+    const elapsed = performance.now() - start;
+    const data = await response.json();
+
+    checks++;
+    times.push(elapsed);
+    times = times.slice(-12);
+
+    const healthy = response.ok && data.status === 'healthy';
+    document.getElementById('http-status').textContent = response.status;
+    document.getElementById('http-tag').textContent = healthy ? 'OK' : 'Problem';
+    document.getElementById('response-time').textContent = elapsed.toFixed(1) + ' ms';
+    document.getElementById('speed-tag').textContent =
+      elapsed < 200 ? 'Fast' : 'Response received';
+    document.getElementById('total-checks').textContent = checks;
+    document.getElementById('last-check').textContent =
+      new Date().toLocaleTimeString();
+    document.getElementById('hero-title').textContent =
+      healthy ? 'Application is Running' : 'Application Needs Attention';
+    document.getElementById('hero-description').textContent =
+      healthy ? 'Health endpoint responded successfully.' : 'Health check failed.';
+    document.getElementById('check-icon').textContent = healthy ? '✓' : '!';
+    document.getElementById('status-pill').textContent =
+      healthy ? '● Healthy' : '● Unhealthy';
+    document.getElementById('status-pill').style.background =
+      healthy ? '#d0f6e5' : '#ffe1e1';
+    document.getElementById('status-pill').style.color =
+      healthy ? '#08794e' : '#b42318';
+    message.textContent = healthy
+      ? '✅ Health check passed successfully.'
+      : '⚠️ The health endpoint reported a problem.';
+    addLog(`GET /health → ${response.status} (${elapsed.toFixed(1)} ms)`);
+    drawChart();
+  } catch (error) {
+    document.getElementById('hero-title').textContent = 'Health Check Failed';
+    document.getElementById('hero-description').textContent =
+      'Could not reach the health endpoint.';
+    document.getElementById('http-status').textContent = 'Error';
+    document.getElementById('http-tag').textContent = 'Failed';
+    document.getElementById('check-icon').textContent = '!';
+    document.getElementById('status-pill').textContent = '● Unhealthy';
+    message.textContent = '❌ Could not connect to /health.';
+    addLog('GET /health → connection failed');
+  }
+}
+
+checkHealth();
+setInterval(checkHealth, 10000);
+</script>
+</body>
+</html>
